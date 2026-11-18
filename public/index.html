@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会议纪要｜Javis 产品设计评审 2026-11-17</title>
+<style>
+  :root{--bg:#f4f6fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--pri:#2563eb;--pri-l:#e8efff;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;--line:#e5e7eb;--hl:#fff7d6}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:36px 20px 70px}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  header h1{margin:0 0 6px;font-size:28px}
+  header p{margin:0;opacity:.85}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;font-size:13px}
+  main{margin-top:-46px;padding-bottom:120px}
+  .card{background:var(--card);border-radius:14px;box-shadow:0 4px 18px rgba(30,58,138,.07);padding:22px 26px;margin-bottom:18px;transition:background .3s,box-shadow .3s}
+  .card.speaking{background:var(--hl);box-shadow:0 0 0 3px #facc15}
+  .card h2{margin:0 0 12px;font-size:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .card h3{font-size:16px;margin:16px 0 6px;color:#1e3a8a}
+  .num{background:var(--pri);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+  .say{margin-left:auto;border:1px solid var(--pri);color:var(--pri);background:#fff;border-radius:8px;padding:3px 10px;font-size:13px;cursor:pointer}
+  .say:hover{background:var(--pri-l)}
+  ul{padding-left:20px;margin:6px 0}
+  li{margin:3px 0}
+  .tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:6px;margin-right:4px;vertical-align:1px}
+  .t-done{background:#dcfce7;color:#166534}.t-key{background:#dbeafe;color:#1e40af}.t-risk{background:#fee2e2;color:#991b1b}.t-tbd{background:#fef3c7;color:#92400e}
+  .concl{background:#f0fdf4;border-left:4px solid var(--ok);padding:8px 14px;border-radius:0 8px 8px 0;margin:10px 0}
+  .note{background:#fffbeb;border-left:4px solid var(--warn);padding:8px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:14px}
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .summary div{background:var(--pri-l);border-radius:10px;padding:12px 14px}
+  .summary b{display:block;color:#1e3a8a;margin-bottom:2px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+  th{background:#f8fafc;color:#334155;font-weight:600;white-space:nowrap}
+  td.c{text-align:center}
+  tr.done td{color:#9ca3af;text-decoration:line-through}
+  .pri{font-weight:600;white-space:nowrap}.p1{color:var(--bad)}.p2{color:var(--warn)}.p3{color:var(--muted)}
+  .progress{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 14px}
+  .progress i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+  .player{position:fixed;left:0;right:0;bottom:0;background:#0f172a;color:#fff;padding:10px 16px;z-index:10;box-shadow:0 -4px 20px rgba(0,0,0,.2)}
+  .player .wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .player button{background:#334155;color:#fff;border:0;border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer}
+  .player button.main{background:var(--pri)}
+  .player button:disabled{opacity:.4;cursor:not-allowed}
+  .player select{background:#1e293b;color:#fff;border:1px solid #334155;border-radius:8px;padding:7px 8px;font-size:13px;max-width:210px}
+  .player .status{font-size:13px;opacity:.8;flex:1;min-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @media (max-width:640px){
+    header h1{font-size:22px}.card{padding:18px}
+    table,thead,tbody,tr,th,td{display:block}thead{display:none}
+    tr{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:6px 10px}
+    td{border:0;padding:3px 0}td.c{text-align:left}
+    td[data-l]::before{content:attr(data-l)"：";color:var(--muted);font-size:12px}
+  }
+  @media print{.player,.say{display:none}header{color:#000;background:none}main{margin-top:0}}
+</style>
+</head><body>
+<header>
+  <div class="wrap">
+    <h1>会议纪要：Javis（司徒）产品设计评审——“读懂用户”</h1>
+    <p>原文：20261117_Javis-part1、part2（录音转写，按 part1 → part2 顺序整理）</p>
+    <div class="meta">
+      <span>📅 2026-11-17（周二）约 16:30 开始</span>
+      <span>⏱ 约 4 小时（part1 约 2 小时 18 分，part2 约 2 小时 5 分）</span>
+      <span>👥 Kevin、mango、大胃</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card" data-speak>
+    <h2><span class="num">★</span>摘要<button class="say">🔊 播报</button></h2>
+    <p>本次会议由大胃逐页讲解“读懂用户”设计文档（约 46 页），Kevin 和 mango 逐条提出意见；中间看了 mango 的原型演示。会议把很多“要预先设计好”的功能砍掉，改成“交给模型、按用户习惯学”。主要结论如下：</p>
+    <div class="summary">
+      <div><b>总原则</b>让 AI 适应人，不让人学 AI。所有设计都要符合这条原则</div>
+      <div><b>资料</b>用户只勾选 1～3 个文件夹，不搬家、不整理；本地后台建索引，边建边用，几分钟内回答第一个问题</div>
+      <div><b>检索</b>标签过滤 → 全文语义检索 → 交给模型；预先把资料分成销售（客户）、采购（供应商）、行政三块</div>
+      <div><b>交互</b>不用传统“多会话”，改成“工作项”：黄灯进行中、绿灯完成；同时最多 3 个</div>
+      <div><b>边界</b>第一阶段不往电脑外发任何东西；删除要明确指令并二次确认；不做“窥屏”式情景感知</div>
+      <div><b>习惯</b>明确指令优先、立即执行；行为和指令矛盾重复多次后才改习惯；画像不给用户看</div>
+      <div><b>砍掉/不做</b>预定义卡片、归属确认、情景感知、开场问卷、情绪识别（第一版）、性格管家（彩蛋，以后再说）</div>
+      <div><b>下一步</b>整理纪要，按模块（资料、行为、习惯、画像 × 各项门槛）写明确需求</div>
+    </div>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">👥</span>参会人<button class="say">🔊 播报</button></h2>
+    <table>
+      <thead><tr><th>参会人</th><th>会上角色</th><th>主要观点</th></tr></thead>
+      <tbody>
+        <tr><td data-l="参会人"><b>Kevin</b></td><td data-l="会上角色">产品决策、技术判断</td><td data-l="主要观点">反对“预先定义”和“穷举需求”，主张把功能交给模型；提出检索分层、工作项机制、不外发、删除二次确认、指令优先等规则；会后整理录音。</td></tr>
+        <tr><td data-l="参会人"><b>mango</b></td><td data-l="会上角色">原型、交互、推广</td><td data-l="主要观点">做了原型演示视频；主张不预定义卡片、不加客户确认步骤；提出拖文件的用户习惯问题、视频号推广；更新了用户画像。</td></tr>
+        <tr><td data-l="参会人"><b>大胃</b></td><td data-l="会上角色">设计文档讲解、用户研究</td><td data-l="主要观点">讲解总原则和“资料、行为、习惯 → 个人画像”的设计；从用户场景（调研、品牌手册、多项目并行、反复追问）补充需求。</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>说明：</strong>转写只标了“发言人1～4”，而且两段录音的编号不一致。上表的姓名对应是根据对话内容推断的（如“芒果，我觉得你需要一点美感”是对原型作者说的），如有不对请告诉我修改。</div>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">1</span>产品方向：总原则<button class="say">🔊 播报</button></h2>
+    <p>目标用户：资料多、“一人多档”、极度追求效率的个人和小团队（一人公司、三五人的创业团队）。<strong>总原则：让 AI 适应人，而不是让人学 AI。</strong>由总原则拆出的细项原则（来自二手调研数据）：</p>
+    <ul>
+      <li><span class="tag t-key">资料不搬家</span>就地读取用户已有文件夹，不要求上传、整理、打标签，目标是零门槛。</li>
+      <li><span class="tag t-key">不用学</span>不用写提示词，没有教程，助手从资料和习惯中学习用户。</li>
+      <li><span class="tag t-key">先给结果再确认</span>拿不准时给 2～3 个选项让用户点选，不连续追问。</li>
+      <li><span class="tag t-key">改一次就记住</span>用户改过的地方写进画像，以后不再犯。</li>
+      <li><span class="tag t-key">每句话有出处</span>结论可追溯；资料里没有的不乱说。调研数据：约 62% 的用户会核对 AI 的回答。</li>
+      <li><span class="tag t-key">循序渐进，可撤销</span>只读授权的文件夹；改文件、往外发东西之前先确认。</li>
+      <li><span class="tag t-key">主动而克制</span>只在约定的时间、有实际变化时提醒，平时不打扰。</li>
+    </ul>
+    <p>设计框架：从<strong>资料、行为、习惯</strong>三方面收集信息，形成千人千面的<strong>个人画像</strong>，再用来满足四个方面（零门槛、理解意图、交付质量等）。每个模块写清楚：做什么、怎么做、为什么、开发要考虑什么。</p>
+    <div class="concl"><strong>结论：</strong>总原则和逻辑没有异议。会上进一步明确：<strong>不预先定义具体工作功能，只定实现方向，具体由模型完成</strong>（这一点也要传达给开发）。</div>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">2</span>资料：读取、索引与检索<button class="say">🔊 播报</button></h2>
+    <h3>2.1 首次使用</h3>
+    <ul>
+      <li>聚焦<strong>工作资料</strong>：客户和项目资料（方案、合同、报价、会议纪要、交付物）、自己的作品（稿子、课件、PPT）、沟通记录（邮件、录音）、参考资料。</li>
+      <li>安装后弹出设置页，用户<strong>勾选 1～3 个常用文件夹</strong>，只读勾选的；默认推荐桌面、文档、微信文件等位置。</li>
+      <li>文件夹再乱也不动：不改名、不移动、不在明面上打标签。</li>
+      <li><strong>本地后台建索引，边建边用</strong>：先处理最近修改、体积小的文件，几分钟内（目标 3 分钟以内，越快越好）回答第一个问题；显示读取进度条。索引存在本地、不上传，这也是卖点之一。</li>
+    </ul>
+    <h3>2.2 客户和项目“地图”</h3>
+    <ul>
+      <li>原设计：自动判断文件属于哪个客户、哪个项目，再让用户确认（如“A公司”和“A司”是否合并）。</li>
+      <li>mango 和 Kevin 认为不需要用户确认：名字相近的模型自己能判断；有全文语义检索后，提到项目或公司都能直接找到。</li>
+    </ul>
+    <div class="concl"><strong>结论：</strong>取消“让用户确认归属”这一步。改为：对文档打<strong>文档类型/业务类型标签</strong>（如销售合同、采购合同），并预先把资料分成<strong>销售（客户）、采购（供应商）、行政</strong>三块，提取客户、供应商、对接人信息，作为和标签同级的索引。查询流程是：<strong>标签过滤 → 全文语义检索 → 交给模型处理</strong>（例如 500 个文件 → 30 个文件 → 模型）。</div>
+    <h3>2.3 待解决：需要“转换一次”的问题</h3>
+    <ul>
+      <li>例：“找出最近一年合作过的供应商”。合同里只写甲方、乙方，没有“供应商”字样，要先知道“我是谁”，才能判断对方是不是供应商。类似的还有“员工资料”和“花名册”。</li>
+      <li>这类问题无法穷举。目标用户文件量不大（估计 200～300 个），问题相对可控。</li>
+    </ul>
+    <div class="note"><strong>规则：</strong>当需要同时处理的文件超过一定数量（会上先后说了 20 和 50，待定）时，直接告诉用户“量太大，暂时做不了”，并把问题记下来。靠种子用户反馈逐步解决，常用的问题就那么些。</div>
+    <h3>2.4 特殊文件</h3>
+    <ul>
+      <li>加密、损坏、无后缀、重复的文件：读不了就告诉用户。无后缀文件先按常见格式尝试打开。</li>
+      <li>CAD、Photoshop 文件能打开，但怎么用文字描述是个问题，遇到再说。</li>
+    </ul>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">3</span>展示与入口：不预先定义<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li><span class="tag t-risk">不做</span>预先定义“最新动态、关键数字、待办”等卡片。我们不知道用户关心什么，由用户的提问来决定。</li>
+      <li>项目进度：只有资料里有项目计划（步骤或甘特图）时，才能说“做到第几步、后面还有什么”；没有计划时只说做了什么。用户可以让助手先根据资料生成项目计划。会上提醒：这种情况下回答可能不一致，用户会不舒服，需要想好怎么处理。</li>
+      <li><span class="tag t-key">Smart UI</span>快捷入口默认放 <strong>1 个</strong>，按用户提问的比例动态生成，<strong>最多 3 个</strong>。用户经常问的才显示，一个月问两次的不显示。</li>
+    </ul>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">4</span>拖文件与使用习惯<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li>用户的老习惯是“把文件拖进去再问”。我们更好的方式是直接说“比较一下 A 客户和 B 客户的合同”。</li>
+      <li>mango 曾提议干脆不让拖；Kevin 认为不行，比如从微信拿到的报价单、孩子的作业，必须能拖。</li>
+      <li>会上还讨论：用户习惯自己建文件夹，要让用户慢慢发现用检索找文件更方便，不需要自己整理。</li>
+    </ul>
+    <div class="concl"><strong>结论：</strong>保留拖文件，<strong>拖进来就等于授权读这个文件</strong>。通过一个约 30 秒的简短新手视频，介绍“一句话找文件”“自动版本管理”等两三个亮点，引导用户慢慢改变习惯。也可以用种子用户的真实案例做宣传短片，在自媒体上持续发布（mango 认为对目标客户来说，微信视频号比小红书更容易触达）。</div>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">5</span>原型评审（mango）<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li>原型演示视频约 15 分钟，没有声音；原型里的讲解只给内部三人看，“仅开发者可见”的面板用户看不到。</li>
+      <li>需要提升<strong>交互上的美感</strong>（不是视觉）。唤起框参照苹果 Spotlight 搜索框的标准：简洁、优雅。</li>
+      <li><span class="tag t-risk">删除</span>“帮你省了多少钱、省了多少时间”这类展示，一定要去掉。</li>
+      <li>待定：唤起框输入后，结果怎么展示（悬浮窗是否盖住下面的内容等），留到交互设计阶段再定。</li>
+    </ul>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">6</span>会话改为“工作项”<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li>问题：传统多会话需要用户自己管理，投入产出比低，很多人干脆不管；但完全没有上下文，又没法反复追问、修改。</li>
+      <li><strong>机制</strong>：在唤起框里说一句话，就生成一个“工作项”。<span class="tag t-tbd">黄色</span>进行中，这时不能继续对话；<span class="tag t-done">绿色</span>完成，右下角弹出提示，点开后可以继续对话。</li>
+      <li>工作项内部<strong>有上下文</strong>。新输入如果和某个工作项相关，自动放进那个工作项并打开；否则新开一个。历史工作项可以重新打开继续做。</li>
+      <li><strong>同时进行最多 3 个</strong>（正常人同时处理 2～3 件事已经是上限），付费可以多开。</li>
+      <li>多个结果有歧义时（比如同时跑了三个方案，用户说“把那个方案给我”），给出选项让用户点一下，<strong>最多问两次</strong>，不反复追问。</li>
+      <li><span class="tag t-key">版本管理</span>只做最简单的线性版本 1、2、3……，每个版本是独立文件，不做分支，默认用最新版。</li>
+    </ul>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">7</span>交付：出处、模板、自检<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li><span class="tag t-key">出处</span>在对话或卡片里列出引用了哪些文件，可以点开查看；不提供“第几页第几行”。交付文档里默认<strong>不写出处</strong>，用户要求后才写，并记住这个要求。</li>
+      <li>Word、Excel 里加本地文件链接容易失效。用户要求加链接时，建议改用 HTML 格式交付（可以展开查看出处，方便发给别人）。</li>
+      <li>客户名称、金额写法等格式先按统一规则输出，用户改了就记住他的习惯。</li>
+      <li><span class="tag t-key">模板</span>找到匹配的模板时，<strong>严格按模板的结构和格式做，但不照抄内容</strong>；找不到模板时，先给大纲让用户确认，再往下写。</li>
+      <li>受众和使用场景（比如给奥特莱斯还是精品店）需要用户说明，助手不去猜。</li>
+      <li>交付前自检：模板、标题层级、数字、出处是否符合要求。</li>
+      <li>默认给<strong>一个最好的方案</strong>；用户在同类任务里多次要求多个方案后，以后就默认给多个方案（形成习惯）。</li>
+    </ul>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">8</span>行为、习惯与个人画像<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li><b>行为和习惯</b>：行为是单次的，习惯是多次行为的总结，处理方式一样，区别只是次数。</li>
+      <li><b>不问卷、不教学</b>：开场不填问卷，不问身份。<b>冷启动</b>：可以导入 5～10 篇过去写的文章或报告，马上得到一份风格总结；初始画像先用目标人群的通用特征。</li>
+      <li><b>指令和习惯冲突</b>：用户的明确指令优先级最高，立即执行。如果之后的行为和指令矛盾，重复多次（基础版 3～5 次）后，再改成按行为来。进阶版考虑按情绪区分（语气平静 10 次再改，情绪激动 3 次就改），<strong>第一版不做情绪识别</strong>，但要写进文档。</li>
+      <li><b>画像更新</b>：不做实时分析，定期批量更新（例如两周一次）。用户手动改了授权文件，直接更新索引，不提醒用户。为什么改（比如字体、格式偏好）要记下来，具体怎么记以后细聊。</li>
+      <li><b>内部质量指标</b>：记录每次交付的采纳率、修改幅度、重复次数，用来优化交付质量；用户使用约一个月后，可以用修改量是否下降来检验效果。</li>
+      <li><b>画像不给用户看、也不能改</b>。如果法律要求可见，就用低调的方式提供；不对用户说“你习惯结论先行”这类话。</li>
+      <li><b>业务信息</b>：记录客户和对接人的称呼（例如 A 公司对接黄总、B 公司对接宋总），资料变化就更新。项目结束后不用删除客户信息，硬盘够用就不删，可以考虑“归档”。</li>
+      <li>识别到固定的工作节奏（比如每周写周报）时，问一句是否设为固定事项；用户不理就不再提，可以在后台准备好，用户问时再给。定时任务只做用户明确设置的。</li>
+      <li><span class="tag t-tbd">以后再说</span>不同性格的管家（如“小辣椒”很激进地催工作，“阿福”提醒你早睡），作为彩蛋，第一版不做。</li>
+    </ul>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">9</span>安全与边界<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li><span class="tag t-risk">不做</span><b>情景感知</b>：不读取用户当前屏幕、正在看的文件，避免“窥屏”的感觉。只有用户在司徒里打开的工作项才作为背景。</li>
+      <li><b>不外发</b>：第一阶段不发邮件、不发消息，没有用户指令，任何东西都不会离开电脑。收邮件可以考虑；会上也说“所有需要用户名密码的东西现阶段都不碰”，具体方式待定。</li>
+      <li><b>删除</b>：用户明确要求才删。删之前列出文件详情（创建、修改、使用时间），二次确认，说明是永久删除。</li>
+      <li><b>不覆盖</b>：有版本管理，不存在覆盖。用户手动改了文件，记录差异；用户手动删了文件，记录“最新版已找不到”。</li>
+      <li>不做操作别的软件（GUI 操作）的事，只负责生成文档。</li>
+      <li><b>中断</b>：关掉窗口不影响，后台服务继续跑；要在右下角确认关闭才真正退出。断电后重新打开工作项，从中断的地方接着做。</li>
+    </ul>
+  </section>
+
+  <section class="card" data-speak>
+    <h2><span class="num">10</span>下一步<button class="say">🔊 播报</button></h2>
+    <ul>
+      <li>把两天的录音整理成会议纪要，再结合大胃的文档细化。</li>
+      <li>按模块写明确需求：资料、行为、习惯、个人画像，分别对应零门槛、理解意图、Smart UI、交付等各项门槛，每一项写清楚怎么做。</li>
+      <li>文档后面还有“体验旅程”（安装 0～3 分钟、首次惊喜约 10 分钟、第一天到第一周的指标）和测试用户反馈报告，会上快速带过，需要补充。</li>
+    </ul>
+  </section>
+
+  <section class="card" id="todo" data-speak>
+    <h2><span class="num">✓</span>工作项<button class="say">🔊 播报</button></h2>
+    <div style="font-size:14px;color:var(--muted)">勾选后自动保存在本浏览器　<span id="pct">0/0</span></div>
+    <div class="progress"><i id="bar"></i></div>
+    <table>
+      <thead><tr><th>完成</th><th>#</th><th>工作项</th><th>负责人</th><th>时间要求</th><th>优先级</th></tr></thead>
+      <tbody id="todoBody"></tbody>
+    </table>
+    <div class="note">说明：本纪要根据约 4 小时的录音转写整理，按 part1、part2 的顺序合并。转写中识别错误、口头禅和闲聊（如查大学排名、休息）较多，已按上下文理解或略去；“司徒”“师徒”“视图”统一理解为产品名“司徒”，“艾伦”理解为开发 Allen。会上没有明确负责人和时间的事项，按对话推断，已标注“推断”。</div>
+  </section>
+
+</main>
+
+<div class="player">
+  <div class="wrap">
+    <button class="main" id="playAll">▶ 全文播报</button>
+    <button id="pauseBtn" disabled>⏸ 暂停</button>
+    <button id="stopBtn" disabled>⏹ 停止</button>
+    <select id="rate" title="语速">
+      <option value="0.8">0.8x 慢速</option>
+      <option value="1" selected>1.0x 正常</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x 快速</option>
+    </select>
+    <select id="voice" title="发音人"></select>
+    <span class="status" id="status">点击“全文播报”或各段的🔊按钮收听</span>
+  </div>
+</div>
+
+<script>
+const TODOS = [
+  ["把两段录音整理成会议纪要，再结合设计文档细化","Kevin","11月18日","高"],
+  ["按模块写明确需求：资料、行为、习惯、个人画像 × 零门槛 / 理解意图 / Smart UI / 交付，每项写清怎么做、为什么、开发注意点","大胃（推断）","纪要整理完成后","高"],
+  ["把“不预先定义工作功能，只定实现方向，具体由模型完成”的原则传达给开发（Allen）","Kevin（推断）","写需求时同步","高"],
+  ["设计资料索引：本地后台建索引、边建边用、进度条；文档类型/业务类型标签；销售、采购、行政三块的客户/供应商/对接人信息提取","大胃、mango（推断）","需求文档","高"],
+  ["定“文件量太大”规则的阈值（20 还是 50 个文件），并建立“做不了的问题”记录机制，靠种子用户反馈迭代","Kevin、大胃","需求文档","中"],
+  ["原型修改：去掉预定义卡片、归属确认、“省了多少钱/时间”；唤起框参照苹果 Spotlight 打磨交互美感；Smart UI 快捷入口 1～3 个动态生成","mango","下一版原型","高"],
+  ["设计“工作项”机制：黄灯/绿灯状态、最多 3 个并行、自动归入相关工作项、歧义时点选（最多问两次）、历史工作项可重新打开","mango","下一版原型","高"],
+  ["明确安全边界写入需求：不窥屏、第一阶段不外发、删除二次确认、只做线性版本管理、关窗后台继续运行、断电后续做","大胃（推断）","需求文档","高"],
+  ["写交付规则：出处只在对话中列出、模板严格按结构不照抄内容、无模板先给大纲、交付前自检、默认给一个方案","大胃（推断）","需求文档","中"],
+  ["写习惯/画像规则：指令优先、行为矛盾 3～5 次再改、定期批量更新画像、画像不对用户展示；情绪识别写入文档但第一版不做","大胃（推断）","需求文档","中"],
+  ["细化“习惯”怎么记录（修改原因、格式偏好如何抽象成习惯）","全员","另约时间细聊","中"],
+  ["制作约 30 秒新手引导视频，展示一句话找文件、自动版本管理等亮点","mango（推断）","上线前","中"],
+  ["出自媒体推广计划（视频号优先），用种子用户真实案例做宣传短片","mango","待定","低"],
+  ["补充体验旅程指标（安装 0～3 分钟、首次惊喜约 10 分钟、第一天到第一周）和测试用户反馈报告","大胃","待定","低"]
+];
+const KEY="javis-1117-todos";
+let state={};try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+const tb=document.getElementById("todoBody");
+TODOS.forEach((t,i)=>{
+  const tr=document.createElement("tr");
+  const p=t[3]==="高"?"p1":t[3]==="中"?"p2":"p3";
+  tr.innerHTML=`<td class="c" data-l="完成"><input type="checkbox" aria-label="完成"></td><td data-l="#">${i+1}</td><td data-l="工作项">${t[0]}</td><td data-l="负责人">${t[1]}</td><td data-l="时间要求">${t[2]}</td><td data-l="优先级" class="pri ${p}">${t[3]}</td>`;
+  const cb=tr.querySelector("input");cb.checked=!!state[i];tr.classList.toggle("done",cb.checked);
+  cb.onchange=()=>{state[i]=cb.checked;tr.classList.toggle("done",cb.checked);localStorage.setItem(KEY,JSON.stringify(state));upd()};
+  tb.appendChild(tr);
+});
+function upd(){const n=TODOS.filter((_,i)=>state[i]).length;document.getElementById("pct").textContent=`已完成 ${n}/${TODOS.length}`;document.getElementById("bar").style.width=(n/TODOS.length*100)+"%"}
+upd();
+
+/* ---------- 语音播报 ---------- */
+const synth=window.speechSynthesis;
+const $=id=>document.getElementById(id);
+const statusEl=$("status"),pauseBtn=$("pauseBtn"),stopBtn=$("stopBtn"),voiceSel=$("voice");
+const cards=[...document.querySelectorAll("[data-speak]")];
+let queue=[],playing=false,paused=false,voices=[];
+
+function loadVoices(){
+  voices=synth?synth.getVoices().filter(v=>/^zh/i.test(v.lang)):[];
+  voiceSel.innerHTML=voices.length?voices.map((v,i)=>`<option value="${i}">${v.name}</option>`).join(""):'<option>系统默认中文</option>';
+  const pref=voices.findIndex(v=>/zh[-_]CN/i.test(v.lang)&&/Xiaoxiao|Tingting|Google|Microsoft/i.test(v.name));
+  if(pref>=0)voiceSel.value=pref;
+}
+if(!synth){statusEl.textContent="当前浏览器不支持语音播报，请使用 Chrome、Edge 或 Safari";$("playAll").disabled=true}
+else{loadVoices();synth.onvoiceschanged=loadVoices}
+
+function cardText(card){
+  if(card.id==="todo"){
+    return "待办工作项，共"+TODOS.length+"项。"+TODOS.map((t,i)=>`第${i+1}项，${t[0]}。负责人：${t[1]}。时间要求：${t[2]}。优先级：${t[3]}。`).join("");
+  }
+  const c=card.cloneNode(true);c.querySelectorAll(".say,.num").forEach(e=>e.remove());
+  c.querySelectorAll("li,p,h2,h3,div,b").forEach(e=>e.append("。"));
+  return c.textContent.replace(/\s+/g," ").replace(/[。．]\s*(?=[。，：；])/g,"").replace(/[：:]。/g,"：").replace(/。+/g,"。")
+    .replace(/～/g,"到").replace(/\+/g,"加").replace(/\//g,"、").replace(/（推断）/g,"");
+}
+function chunks(txt){ // 拆成短句，避免 Chrome 长文本中断
+  const out=[];let buf="";
+  txt.split(/(?<=[。！？；])/).forEach(s=>{if((buf+s).length>120&&buf){out.push(buf);buf=s}else buf+=s});
+  if(buf.trim())out.push(buf);return out;
+}
+function mark(card){cards.forEach(c=>c.classList.toggle("speaking",c===card));if(card)card.scrollIntoView({behavior:"smooth",block:"start"})}
+function stop(){queue=[];playing=false;paused=false;synth.cancel();mark(null);pauseBtn.disabled=stopBtn.disabled=true;pauseBtn.textContent="⏸ 暂停";statusEl.textContent="已停止"}
+function next(){
+  if(!queue.length){playing=false;mark(null);pauseBtn.disabled=stopBtn.disabled=true;statusEl.textContent="播报完毕";return}
+  const {card,text}=queue.shift();
+  if(card)mark(card);
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="zh-CN";u.rate=parseFloat($("rate").value);
+  if(voices[voiceSel.value])u.voice=voices[voiceSel.value];
+  u.onend=()=>{if(playing)next()};u.onerror=e=>{if(playing&&e.error!=="interrupted"&&e.error!=="canceled")next()};
+  statusEl.textContent="正在播报："+(card?card.querySelector("h2").firstChild.nextSibling.textContent.trim():"");
+  synth.speak(u);
+}
+function play(list){
+  synth.cancel();queue=[];
+  list.forEach(card=>chunks(cardText(card)).forEach((t,i)=>queue.push({card:i===0?card:null,text:t})));
+  playing=true;paused=false;pauseBtn.disabled=stopBtn.disabled=false;pauseBtn.textContent="⏸ 暂停";
+  setTimeout(next,60);
+}
+$("playAll").onclick=()=>play(cards);
+cards.forEach(c=>c.querySelector(".say").onclick=()=>play([c]));
+stopBtn.onclick=stop;
+pauseBtn.onclick=()=>{
+  if(!playing)return;
+  if(paused){synth.resume();paused=false;pauseBtn.textContent="⏸ 暂停"}
+  else{synth.pause();paused=true;pauseBtn.textContent="▶ 继续"}
+};
+window.addEventListener("beforeunload",()=>synth&&synth.cancel());
+</script>
+</body>
+</html>
